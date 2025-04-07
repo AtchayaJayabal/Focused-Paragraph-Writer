@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { saveAs } from "file-saver";
+import { Document, Packer, Paragraph, TextRun } from "docx";
 
 export default function Home() {
   const [blogText, setBlogText] = useState("");
@@ -15,7 +17,7 @@ export default function Home() {
     }
 
     const splitParas = blogText
-      .split(/\n\s*\n/) // splits on blank lines
+      .split(/\n\s*\n/)
       .map(p => p.trim())
       .filter(p => p.length > 0);
 
@@ -33,6 +35,33 @@ export default function Home() {
   const copyToClipboard = () => {
     navigator.clipboard.writeText(responses[index] || "");
     alert("Copied!");
+  };
+
+  const copyAllToClipboard = () => {
+    const full = responses.filter(r => r.trim() !== "").join("\n\n");
+    navigator.clipboard.writeText(full);
+    alert("Entire blog copied!");
+  };
+
+  const downloadAsTxt = () => {
+    const full = responses.filter(r => r.trim() !== "").join("\n\n");
+    const blob = new Blob([full], { type: "text/plain;charset=utf-8" });
+    saveAs(blob, "my_rewritten_blog.txt");
+  };
+
+  const downloadAsDocx = async () => {
+    const doc = new Document({
+      sections: [
+        {
+          children: responses
+            .filter(r => r.trim() !== "")
+            .map(p => new Paragraph(p)),
+        },
+      ],
+    });
+
+    const blob = await Packer.toBlob(doc);
+    saveAs(blob, "my_rewritten_blog.docx");
   };
 
   const nextParagraph = () => {
@@ -83,6 +112,13 @@ export default function Home() {
       <button onClick={copyToClipboard} style={{ marginTop: "20px", padding: "10px 20px" }}>
         📋 Copy My Version
       </button>
+
+      <div style={{ marginTop: "40px" }}>
+        <h4>🧾 Final Blog Tools</h4>
+        <button onClick={copyAllToClipboard} style={{ marginRight: "10px" }}>📄 Copy Entire Blog</button>
+        <button onClick={downloadAsTxt} style={{ marginRight: "10px" }}>⬇️ Download as .txt</button>
+        <button onClick={downloadAsDocx}>⬇️ Download as .docx</button>
+      </div>
     </div>
   );
 }

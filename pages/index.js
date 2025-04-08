@@ -135,6 +135,27 @@ export default function Home() {
         <button onClick={nextParagraph} disabled={index === paragraphs.length - 1}>Next →</button>
       </div>
 
+      {/* Pagination Buttons */}
+      <div style={{ marginTop: "20px", display: "flex", flexWrap: "wrap", gap: "8px", justifyContent: "center" }}>
+        {paragraphs.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setIndex(i)}
+            style={{
+              padding: "6px 10px",
+              backgroundColor: index === i ? "#007bff" : "#f0f0f0",
+              color: index === i ? "#fff" : "#333",
+              border: "1px solid #ccc",
+              borderRadius: "4px",
+              cursor: "pointer",
+              minWidth: "32px",
+            }}
+          >
+            {i + 1}
+          </button>
+        ))}
+      </div>
+
       <button onClick={copyToClipboard} style={{ marginTop: "20px", padding: "10px 20px" }}>
         📋 Copy My Version
       </button>
